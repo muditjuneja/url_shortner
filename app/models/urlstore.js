@@ -19,9 +19,9 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'url_store',
   });
   UrlStore.associate = function (models) {
-    // UrlStore.hasMany(models.RolePermission, {
-    //   foreignKey: 'role'
-    // });
+    UrlStore.hasMany(models.UrlLog, {
+      foreignKey: 'url'
+    });
 
   };
   return UrlStore;

@@ -6,7 +6,8 @@
  */
 
 const urlService = require('../services/urlService');
-
+const DeviceDetector = require("device-detector-js");
+const deviceDetector = new DeviceDetector();
 module.exports = {
     createShortUrl: async (req, res) => {
         const data = req.body;
@@ -46,9 +47,30 @@ module.exports = {
 
         try {
             let response = await urlService.getUrl(num);
+            if (response) {
+                let userAgent = req.headers['user-agent'];
+                let device = deviceDetector.parse(userAgent);
+                // console.log(device);
+                await urlService.logAccess({
+                    data: device,
+                    url: num
+                });
+                return res.ok(response);
+            } else {
+                res.badRequest("Url not found");
+            }
+        } catch (error) {
+            return res.badRequest(error);
+        }
+    },
+
+    getAllUrls: async (req, res) => {
+        try {
+            let response = await urlService.getUrls();
             return res.ok(response);
         } catch (error) {
             return res.badRequest(error);
         }
     }
+
 };
